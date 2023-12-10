@@ -1,25 +1,84 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, Button, TextInput, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  Button, 
+  TextInput, 
+  Image, 
+  ImageBackground, 
+  TouchableOpacity, 
+} from 'react-native';
 
-const backgroundColors = {
-  darkGray: "#474056",
-  blueGray: "#8A95A5",
-  green: "#B9C6AE",
-  almostBlack: "#090C08",
-};
+const backgroundColors = ["#474056", "#8A95A5", "#B9C6AE", "#090C08"];
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState('');
-  const [color, setColor] = useState(backgroundColors.darkGray);
+  const [color, setBackground] = useState(backgroundColors[0]);
+
+  function startChat() {
+    navigation.navigate("Chat", {
+      name: name,
+      color: color,
+    });
+  }
 
   return (
     <View style={styles.container}>
       <ImageBackground
-      source={require("../assets/splash.png")}
+      source={require("../assets/background-image.png")}
       resizeMode='cover'
-      style={styles.image}
+      style={styles.flex1}
       >
-      <Text style={styles.appTitle}>Et tu Chat</Text>
+      <SafeAreaView style={styles.flex1}>
+        <View style={[styles.flex1, { justifyContent: "center" }]}>
+          <Text style={styles.title}>Chat App</Text>
+        </View>
+        <View style={styles.box}>
+          <View style={styles.textInputContainer}>
+            <View style={styles.textInput}>
+              <Image
+              style={styles.icon}
+              source={require("../assets/user-icon.png")}
+              />
+              <TextInput
+                value={name}
+                style={{ width: "100%", marginLeft: 10 }}
+                onChangeText={setName}
+                placeholder={"Your Name"}
+                />
+            </View>
+
+            <View style={styles.colorList}>
+              {backgroundColors.map((clr, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.colorCircles,
+                    { backgroundColor: clr },
+                    color === clr && { borderWidth: 2 },
+                  ]}
+                  onPress={() => setBackground(clr)}
+                  />
+              ))}
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={startChat}
+            >
+              <Text style={styles.button}>Start Chatting</Text>
+            </TouchableOpacity>
+        </View>
+        </SafeAreaView>
+        </ImageBackground>
+        </View>
+  );
+};
+
+export default Start;
+      {/* <Text style={styles.appTitle}>Et tu Chat</Text>
       <View style={styles.inputBox}>
         <View style={styles.iconContainer}>
           <Image
@@ -136,4 +195,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Start;
+export default Start; */}
