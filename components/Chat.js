@@ -14,8 +14,9 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-const Chat = ({ route, navigation, db, isConnected, }) => {
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
     const [messages, setMessages] = useState([]);
        const onSend = (newMessages) => {
         setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))}
@@ -72,6 +73,9 @@ const Chat = ({ route, navigation, db, isConnected, }) => {
                 createdAt: new Date(doc.data().createAt.toMillis()),
               });
             });
+            cacheMessages(newMessages);
+            setMessages(newMessages);
+          
             
             const onSend = (newMessages) => {
               addDoc(collection(db, "messages"), newMessages[0]);
@@ -80,6 +84,24 @@ const Chat = ({ route, navigation, db, isConnected, }) => {
               if (unsubMessages) unsubMessages();
             };
           }, [isConnected]);
+
+          const loadCachedMessages = async () => {
+            const cacheMessages = (await AsyncStorage.getItem("messages")) || [];
+            setMessages(JSON.parse(cachedMessages));
+          };
+          
+          const cachedMessages = async (messagesToCache) => {
+            try {
+              await AsyncStorage.setItem("messages", JSON.stringify(messagesToCache));
+            } catch (error) {
+              console.log(error.message);
+            }
+          };
+
+          const renderInputToolbar = (props) => {
+            if (isConnected) return <InputToolbar {...props} />;
+            else return null;
+          };
         };
       }, []);
 
@@ -94,7 +116,9 @@ const Chat = ({ route, navigation, db, isConnected, }) => {
        _id: userID,
        name,
      }}
+     renderInputToolbar={renderInputToolbar}
    />
+
    { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }
  </View> 
  );
