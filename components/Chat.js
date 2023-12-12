@@ -1,4 +1,4 @@
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
@@ -7,8 +7,15 @@ import {
   KeyboardAvoidingView, 
   Platform 
 } from 'react-native';
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ route, navigation, db, isConnected, }) => {
     const [messages, setMessages] = useState([]);
        const onSend = (newMessages) => {
         setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))}
@@ -26,8 +33,10 @@ const Chat = ({ route, navigation }) => {
      }}
    />
  }
-    const { name } = route.params;
-
+    const { name, backgroundColor, userID } = route.params;
+    
+    let unsubMessages;
+    
     useEffect(() => {
        setMessages([
         {
@@ -49,6 +58,29 @@ const Chat = ({ route, navigation }) => {
       ]);
        
         navigation.setOptions({ title: name });
+        if (isConnected === true) {
+          if (unsubMessages) unsubMessages();
+          unsubMessages = null;
+
+          const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+          unsubMessages = onSnapshot(q, (docs) => {
+            let newMessages = [];
+            docs.forEach((doc) => {
+              newMessages.push({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: new Date(doc.data().createAt.toMillis()),
+              });
+            });
+            
+            const onSend = (newMessages) => {
+              addDoc(collection(db, "messages"), newMessages[0]);
+            };
+            return () => {
+              if (unsubMessages) unsubMessages();
+            };
+          }, [isConnected]);
+        };
       }, []);
 
  return (
@@ -59,7 +91,8 @@ const Chat = ({ route, navigation }) => {
      renderBubble={renderBubble}
      onSend={messages => onSend(messages)}
      user={{
-       _id: 1
+       _id: userID,
+       name,
      }}
    />
    { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }

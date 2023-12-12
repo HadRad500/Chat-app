@@ -9,20 +9,39 @@ import {
   ImageBackground, 
   TouchableOpacity, 
 } from 'react-native';
+import { getAuth, signInAnonymously } from "firebase/auth";
+import "firebase/auth";
 
 const backgroundColors = ["#474056", "#8A95A5", "#B9C6AE", "#090C08"];
 
 const Start = ({ navigation }) => {
+  const auth = getAuth();
   const [name, setName] = useState('');
   const [color, setBackground] = useState(backgroundColors[0]);
 
-  function startChat() {
+  const signInUser = () => {
+    signInAnonymously(auth)
+    .then ((result) => {
+      navigation.navigate("Chat", {
+        userID: result.user.uid,
+        name,
+        backgroundColor: color,
+      });
+      Alert.alert("Signed In!!!");
+    })
+    .catch((error) => {
+      console.error("Error signing in", error);
+      Alert.alert("Unable to sign in");
+    });
+  };
+
+  /* function startChat() {
     navigation.navigate("Chat", {
       name: name,
       color: color,
     });
   }
-
+ */
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -39,7 +58,7 @@ const Start = ({ navigation }) => {
             <View style={styles.textInput}>
               <Image
               style={styles.icon}
-              source={require("../assets/user-icon.png")}
+              source={require("../assets/icon.png")}
               />
               <TextInput
                 value={name}
@@ -63,12 +82,21 @@ const Start = ({ navigation }) => {
               ))}
             </View>
           </View>
-
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => 
+            navigation.navigate("Chat", {
+              name: name,
+              backgroundColor: color,
+            })
+          }
+          >
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={startChat}
+            onPress={signInUser}
             >
               <Text style={styles.button}>Start Chatting</Text>
+            </TouchableOpacity>
             </TouchableOpacity>
         </View>
         </SafeAreaView>
