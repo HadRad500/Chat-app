@@ -40,10 +40,9 @@ const App = () => {
         initialRouteName="Start"
       >
         <Stack.Screen
-          name="Start"
-          component={Start}
-        >
-           {props => <ShoppingLists db={db} {...props} />}
+          name="Start" options={{headerShown: false}}
+        > 
+           {props => <Start db={db} {...props} />}
         </Stack.Screen>
 
         <Stack.Screen

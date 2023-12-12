@@ -3,7 +3,7 @@ import {
   StyleSheet, 
   View, 
   Text, 
-  Button, 
+  SafeAreaView, 
   TextInput, 
   Image, 
   ImageBackground, 
@@ -104,7 +104,97 @@ const Start = ({ navigation }) => {
         </View>
   );
 };
-
+const styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 45,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    marginTop: 40,
+    textAlign: "center",
+  },
+  text: {
+    fontSize: 45,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  box: {
+    flex: 1,
+    width: "90%",
+    alignSelf: "center",
+    justifyContent: "flex-end",
+  },
+  textInputContainer: {
+    backgroundColor: "white",
+    alignItems: "center",
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 15,
+  },
+  textInput: {
+    width: "100%",
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#757083",
+    marginTop: 15,
+    marginBottom: 15,
+    fontSize: 16,
+    fontWeight: "300",
+    color: "#757083",
+    opacity: 50,
+    flexDirection: "row",
+  },
+  textBackground: {
+    fontSize: 16,
+    fontWeight: "300",
+    color: "#757083",
+    opacity: 100,
+    paddingLeft: 20,
+  },
+  colorList: {
+    flexDirection: "row",
+    paddingLeft: 10,
+  },
+  colorCircles: {
+    width: 40,
+    height: 40,
+    margin: 10,
+    borderRadius: 20,
+  },
+  backgroundContainer: {
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    alignSelf: "center",
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    alignItems: "center",
+    backgroundColor: "#757083",
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderRadius: 15,
+    marginBottom: 15,
+  },
+  button: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  selected: {
+    borderWidth: 1,
+    borderColor: "white",
+  },
+  icon: {
+    width: 25,
+    height: 25,
+  },
+});
 export default Start;
       {/* <Text style={styles.appTitle}>Et tu Chat</Text>
       <View style={styles.inputBox}>
