@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 // import the screens
@@ -51,22 +51,23 @@ const App = () => {
         initialRouteName="Start"
       >
         <Stack.Screen
-          name="Start" options={{headerShown: false}}
-        > 
-           {props => 
-           <Start 
-           isConnected={ connectionStatus.isConnected}
-           db={db}
-           //storage={storage}
-           {...props} 
-           />
-           }
-        
+          name="Start" options={{ headerShown: false }}
+        >
+          {props =>
+            <Start
+              isConnected={connectionStatus.isConnected}
+              db={db}
+              //storage={storage}
+              {...props}
+            />
+          }
+
         </Stack.Screen>
 
         <Stack.Screen
           name="Chat"
           component={Chat}
+
         />
       </Stack.Navigator>
     </NavigationContainer>

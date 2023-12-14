@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  SafeAreaView, 
-  TextInput, 
-  Image, 
-  ImageBackground, 
-  TouchableOpacity, 
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  TextInput,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
 } from 'react-native';
 import { getAuth, signInAnonymously } from "firebase/auth";
 import "firebase/auth";
@@ -22,18 +22,18 @@ const Start = ({ navigation }) => {
 
   const signInUser = () => {
     signInAnonymously(auth)
-    .then ((result) => {
-      navigation.navigate("Chat", {
-        userID: result.user.uid,
-        name,
-        backgroundColor: color,
+      .then((result) => {
+        navigation.navigate("Chat", {
+          userID: result.user.uid,
+          name,
+          backgroundColor: color,
+        });
+        Alert.alert("Signed In!!!");
+      })
+      .catch((error) => {
+        console.error("Error signing in", error);
+        Alert.alert("Unable to sign in");
       });
-      Alert.alert("Signed In!!!");
-    })
-    .catch((error) => {
-      console.error("Error signing in", error);
-      Alert.alert("Unable to sign in");
-    });
   };
 
   /* function startChat() {
@@ -46,63 +46,63 @@ const Start = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-      source={require("../assets/background-image.png")}
-      resizeMode='cover'
-      style={styles.flex1}
+        source={require("../assets/background-image.png")}
+        resizeMode='cover'
+        style={styles.flex1}
       >
-      <SafeAreaView style={styles.flex1}>
-        <View style={[styles.flex1, { justifyContent: "center" }]}>
-          <Text style={styles.title}>Chat App</Text>
-        </View>
-        <View style={styles.box}>
-          <View style={styles.textInputContainer}>
-            <View style={styles.textInput}>
-              <Image
-              style={styles.icon}
-              source={require("../assets/icon.png")}
-              />
-              <TextInput
-                value={name}
-                style={{ width: "100%", marginLeft: 10 }}
-                onChangeText={setName}
-                placeholder={"Your Name"}
-                />
-            </View>
-
-            <View style={styles.colorList}>
-              {backgroundColors.map((clr, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.colorCircles,
-                    { backgroundColor: clr },
-                    color === clr && { borderWidth: 2 },
-                  ]}
-                  onPress={() => setBackground(clr)}
-                  />
-              ))}
-            </View>
+        <SafeAreaView style={styles.flex1}>
+          <View style={[styles.flex1, { justifyContent: "center" }]}>
+            <Text style={styles.title}>Chat App</Text>
           </View>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => 
-            navigation.navigate("Chat", {
-              name: name,
-              backgroundColor: color,
-            })
-          }
-          >
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={signInUser}
+          <View style={styles.box}>
+            <View style={styles.textInputContainer}>
+              <View style={styles.textInput}>
+                <Image
+                  style={styles.icon}
+                  source={require("../assets/icon.png")}
+                />
+                <TextInput
+                  value={name}
+                  style={{ width: "100%", marginLeft: 10 }}
+                  onChangeText={setName}
+                  placeholder={"Your Name"}
+                />
+              </View>
+
+              <View style={styles.colorList}>
+                {backgroundColors.map((clr, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.colorCircles,
+                      { backgroundColor: clr },
+                      color === clr && { borderWidth: 2 },
+                    ]}
+                    onPress={() => setBackground(clr)}
+                  />
+                ))}
+              </View>
+            </View>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() =>
+                navigation.navigate("Chat", {
+                  name: name,
+                  backgroundColor: color,
+                })
+              }
             >
-              <Text style={styles.button}>Start Chatting</Text>
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={signInUser}
+              >
+                <Text style={styles.button}>Start Chatting</Text>
+              </TouchableOpacity>
             </TouchableOpacity>
-            </TouchableOpacity>
-        </View>
+          </View>
         </SafeAreaView>
-        </ImageBackground>
-        </View>
+      </ImageBackground>
+    </View>
   );
 };
 const styles = StyleSheet.create({
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
 });
 export default Start;
-      {/* <Text style={styles.appTitle}>Et tu Chat</Text>
+{/* <Text style={styles.appTitle}>Et tu Chat</Text>
       <View style={styles.inputBox}>
         <View style={styles.iconContainer}>
           <Image
