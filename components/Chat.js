@@ -19,7 +19,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 const Chat = ({ route, navigation, db, isConnected, storage }) => {
     const [messages, setMessages] = useState([]);
        const onSend = (newMessages) => {
-        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))}
+        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+        console.log(db);
+        addDoc(collection(db, "messages"), newMessages[0]);
+      }
 
         const renderBubble = (props) => {
           return <Bubble
@@ -73,35 +76,16 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
                 createdAt: new Date(doc.data().createAt.toMillis()),
               });
             });
-            cacheMessages(newMessages);
             setMessages(newMessages);
           
             
-            const onSend = (newMessages) => {
-              addDoc(collection(db, "messages"), newMessages[0]);
-            };
+            //const onSend = (newMessages) => {
+            //};
             return () => {
               if (unsubMessages) unsubMessages();
             };
           }, [isConnected]);
-
-          const loadCachedMessages = async () => {
-            const cacheMessages = (await AsyncStorage.getItem("messages")) || [];
-            setMessages(JSON.parse(cachedMessages));
-          };
           
-          const cachedMessages = async (messagesToCache) => {
-            try {
-              await AsyncStorage.setItem("messages", JSON.stringify(messagesToCache));
-            } catch (error) {
-              console.log(error.message);
-            }
-          };
-
-          const renderInputToolbar = (props) => {
-            if (isConnected) return <InputToolbar {...props} />;
-            else return null;
-          };
         };
       }, []);
 
@@ -116,7 +100,6 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
        _id: userID,
        name,
      }}
-     renderInputToolbar={renderInputToolbar}
    />
 
    { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }

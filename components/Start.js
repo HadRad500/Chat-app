@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { getAuth, signInAnonymously } from "firebase/auth";
 import "firebase/auth";
+import { Alert } from 'react-native';
 
 const backgroundColors = ["#474056", "#8A95A5", "#B9C6AE", "#090C08"];
 
