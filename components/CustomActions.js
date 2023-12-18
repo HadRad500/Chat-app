@@ -76,48 +76,48 @@ const CustomActions = ({
             onSend({ image: imageURL });
         });
     };
-    const pickImage = aysnc() => {
-    let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const pickImage = async () => {
+        let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (permissions?.granted) {
-        let result = await ImagePicker.launchImageLibraryAsync();
+        if (permissions?.granted) {
+            let result = await ImagePicker.launchImageLibraryAsync();
 
-        if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
-        else Alert.alert("Permissions havent been granted");
-    }
+            if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
+            else Alert.alert("Permissions havent been granted");
+        }
+    };
+    const takePhoto = async () => {
+        let permissions = await ImagePicker.requestCameraPermissionsAsync();
+        if (permissions?.granted) {
+            let result = await ImagePicker.launchCameraAsync();
+            if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
+            else Alert.alert("Permissions havent been granted");
+        }
+    };
+    const getLocation = async () => {
+        let permissions = await Location.requestForegroundPermissionsAsync();
+
+        if (permissions?.granted) {
+            const location = await Location.getCurrentPositionAsync({});
+            if (location) {
+                onSend({
+                    location: {
+                        longitude: location.coords.longitude,
+                        latitude: location.coords.latitude,
+                    },
+                });
+            } else Alert.alert("Error occurred while fetching location");
+        } else Alert.alert("Permissions haven't been granted.");
+    };
+
+    return (
+        <TouchableOpacity style={styles.container} onPress={onActionPress}>
+            <View style={[styles.wrapper, wrapperStyle]}>
+                <Text style={[styles.iconText, iconTextStyle]}>+</Text>
+            </View>
+        </TouchableOpacity>
+    );
 };
-const takePhoto = async () => {
-    let permissions = await ImagePicker.requestCameraPermissionsAsync();
-    if (permissions?.granted) {
-        let result = await ImagePicker.launchCameraAsync();
-        if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
-        else Alert.alert("Permissions havent been granted");
-    }
-};
-const getLocation = async () => {
-    let permissions = await Location.requestBackgroundPermissionsAsync();
-
-    if (permissions?.granted) {
-        const location = await Location.getCurrentPositionAsync({});
-        if (location) {
-            onSend({
-                location: {
-                    longitude: location.coords.longitude,
-                    latitude: location.coords.latitude,
-                },
-            });
-        } else Alert.alert("Error occured while fetching location");
-    } else Alert.alert("Permissions havent been granted");
-};
-
-return (
-    <TouchableOpacity style={StyleSheet.container} onPress={onActionPress}>
-        <View style={[styles.wrapper, wrapperStyle]}>
-            <Text style={[styles.iconText, iconTextStyle]}>+</Text>
-        </View>
-    </TouchableOpacity>
-);
- };
 
 const styles = StyleSheet.create({
     container: {

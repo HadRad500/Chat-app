@@ -1,7 +1,8 @@
-import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { useState, useEffect } from 'react';
 import {
   StyleSheet,
+  View,
   Text,
   KeyboardAvoidingView,
   Platform
@@ -13,11 +14,13 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDatabase } from "./DatabaseContext";
 import MapView from "react-native-maps";
 import CustomActions from "./CustomActions";
 
-const Chat = ({ route, navigation, db, isConnected, storage }) => {
+
+const Chat = ({ route, navigation, isConnected }) => {
+  const { db, storage } = useDatabase();
   const [messages, setMessages] = useState([]);
   const onSend = (newMessages) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
@@ -25,43 +28,11 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     addDoc(collection(db, "messages"), newMessages[0]);
   }
 
-  const renderBubble = (props) => {
-    return <Bubble
-      {...props}
-      wrapperStyle={{
-        right: {
-          backgroundColor: "#000"
-        },
-        left: {
-          backgroundColor: "#FFF"
-        }
-      }}
-    />
-  }
   const { name, backgroundColor, userID } = route.params;
 
   let unsubMessages;
 
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-        },
-      },
-      {
-        _id: 2,
-        text: 'This is a system message',
-        createdAt: new Date(),
-        system: true,
-      },
-    ]);
-
     navigation.setOptions({ title: name });
     if (isConnected === true) {
       if (unsubMessages) unsubMessages();
@@ -71,72 +42,82 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
       unsubMessages = onSnapshot(q, (docs) => {
         let newMessages = [];
         docs.forEach((doc) => {
+          const data = doc.data();
           newMessages.push({
-            id: doc.id,
+            _id: data.id,
             ...doc.data(),
-            createdAt: new Date(doc.data().createAt.toMillis()),
+            createdAt: new Date(doc.data().createdAt.toMillis()),
           });
         });
-        setMessages(newMessages);
+        setMessages(newMessages)
+      })
+    }
+    return () => {
+      if (unsubMessages) unsubMessages();
+    };
+  }, [isConnected]);
 
+  const renderCustomActions = (props) => {
+    return <CustomActions storage={storage} {...props} />;
+  };
 
-        //const onSend = (newMessages) => {
-        //};
-        return () => {
-          if (unsubMessages) unsubMessages();
-        };
-      }, [isConnected]);
-
-      const renderCustomActions = (props) => {
-        return <CustomActions storage={storage} {...props} />;
-      };
-
-      const renderCustomView = { props } => {
-  const { currentMessage } = props;
-  if (currentMessage.location) {
+  const renderBubble = (props) => {
     return (
-      <MapView
-        style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
-        region={{
-          latitude: currentMessage.location.latitude,
-          longitude: currentMessage.location.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "#000"
+          },
+          left: {
+            backgroundColor: "#FFF"
+          },
         }}
       />
-    )
-  }
-}
-          
-        };
-      }, []);
+    );
+  };
 
-return (
-  <View style={styles.container}>
-    <Text>Et tu Barnie?!</Text>
-    <GiftedChat
-      messages={messages}
-      renderBubble={renderBubble}
-      onSend={messages => onSend(messages)}
-      user={{
-        _id: userID,
-        name,
-      }}
-      renderActions={renderCustomActions}
-      renderCustomView={renderCustomView}
-    />
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  };
 
-    {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
-  </View>
-);
+  return (
+    <View style={styles.container}>
+      <GiftedChat
+        messages={messages}
+        renderBubble={renderBubble}
+        onSend={messages => onSend(messages)}
+        user={{
+          _id: userID,
+          name,
+        }}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
+      />
+
+      {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+  },
 });
 
 export default Chat;
